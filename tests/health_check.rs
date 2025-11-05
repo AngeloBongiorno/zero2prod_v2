@@ -1,10 +1,10 @@
 use std::net::TcpListener;
 use uuid::Uuid;
-use secrecy::{ExposeSecret, Secret};
+use secrecy::Secret;
 use zero2prod::startup::run;
 use zero2prod::configuration::{get_configuration, DatabaseSettings};
 use zero2prod::telemetry::{init_subscriber, get_subscriber};
-use sqlx::{Connection, Executor, PgConnection, PgPool};
+use sqlx::{Executor, PgPool};
 use std::sync::LazyLock;
 
 static TRACING: LazyLock<()> = LazyLock::new(|| {
@@ -132,7 +132,7 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
     let test_cases = vec![
          ("name=le%20guin", "missing the email"),
          ("email =ursula_le_guin%40gmail.com", "missing the name"),
-         ("", "miss ing both name and email")
+         ("", "missing both name and email")
     ];
 
     for (invalid_body, error_message) in test_cases {
@@ -153,3 +153,36 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
         );
     }
 }
+
+
+/*
+#[tokio::test]
+async fn subscribe_returns_a_400_when_fields_are_present_but_invalid() {
+    let app = spawn_app().await;
+    let client = reqwest::Client::new();
+    let test_cases = vec![
+        ("name=&email=ursula_le_guin%40gmail.com", "empty name"),
+        ("name=Ursula&email=", "empty email"),
+        ("name=Ursula&email=definitelu-not-an-email", "invalid email"),
+    ];
+
+    for (body, description) in test_cases {
+
+        let response = client
+            .post(format!("{}/subscriptions", &app.address))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .body(body)
+            .send()
+            .await
+            .expect("Failed to execute request");
+
+
+        assert_eq!(
+            400,
+            response.status().as_u16(),
+            "The API did not return 400 OK when the payload was {}",
+            description
+        );
+    }
+}
+*/
