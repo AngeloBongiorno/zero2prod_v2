@@ -12,6 +12,9 @@ name = "zero2prod"
 
 [dev-dependencies]
 claims = "0.8"
+quickcheck = "1.0.3"
+quickcheck_macros = "1"
+rand = "0.8"
 
 [dependencies]
 actix-web = "4"
@@ -29,6 +32,8 @@ tracing-actix-web = "0.7"
 secrecy = { version = "0.8", features = ["serde"]}
 serde-aux = "4"
 unicode-segmentation = "1"
+validator = "0.18"
+fake = "2.9"
 
 [dependencies.sqlx]
 version = "0.8"

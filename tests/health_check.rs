@@ -155,7 +155,6 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
 }
 
 
-/*
 #[tokio::test]
 async fn subscribe_returns_a_400_when_fields_are_present_but_invalid() {
     let app = spawn_app().await;
@@ -185,4 +184,3 @@ async fn subscribe_returns_a_400_when_fields_are_present_but_invalid() {
         );
     }
 }
-*/
