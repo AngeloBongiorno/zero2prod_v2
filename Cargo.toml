@@ -35,7 +35,7 @@ tracing-actix-web = "0.7"
 secrecy = { version = "0.8", features = ["serde"]}
 serde-aux = "4"
 unicode-segmentation = "1"
-validator = "0.18"
+validator = "0.20.0"
 fake = "2.9"
 
 [dependencies.sqlx]
