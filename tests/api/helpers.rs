@@ -75,7 +75,8 @@ async fn configure_database(config: &DatabaseSettings) -> PgPool {
         ..config.clone()
     };
 
-    let mut connection = PgPool::connect_with(maintenance_settings.connect_options())
+    let connection = PgPool::connect_with(maintenance_settings.connect_options())
+        //let mut connection = PgPool::connect_with(maintenance_settings.connect_options())
         .await
         .expect("Railed to connect to postgres.");
 
