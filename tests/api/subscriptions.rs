@@ -1,4 +1,7 @@
-use wiremock::{matchers::{method, path}, Mock, ResponseTemplate};
+use wiremock::{
+    Mock, ResponseTemplate,
+    matchers::{method, path},
+};
 
 use crate::helpers::spawn_app;
 
@@ -31,7 +34,6 @@ async fn subscribe_persists_the_new_subscriber() {
 
     test_app.post_subscriptions(body.into()).await;
 
-
     let saved = sqlx::query!("SELECT email, name, status FROM subscriptions",)
         .fetch_one(&test_app.db_pool)
         .await
@@ -40,21 +42,18 @@ async fn subscribe_persists_the_new_subscriber() {
     assert_eq!(saved.email, "ursula_le_guin@gmail.com");
     assert_eq!(saved.name, "le guin");
     assert_eq!(saved.status, "pending_confirmation");
-
 }
-
 
 #[tokio::test]
 async fn subscribe_returns_a_400_when_data_is_missing() {
     let app = spawn_app().await;
     let test_cases = vec![
-         ("name=le%20guin", "missing the email"),
-         ("email =ursula_le_guin%40gmail.com", "missing the name"),
-         ("", "missing both name and email")
+        ("name=le%20guin", "missing the email"),
+        ("email =ursula_le_guin%40gmail.com", "missing the name"),
+        ("", "missing both name and email"),
     ];
 
     for (invalid_body, error_message) in test_cases {
-
         let response = app.post_subscriptions(invalid_body.into()).await;
 
         assert_eq!(
@@ -66,7 +65,6 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
     }
 }
 
-
 #[tokio::test]
 async fn subscribe_returns_a_400_when_fields_are_present_but_invalid() {
     let app = spawn_app().await;
@@ -77,7 +75,6 @@ async fn subscribe_returns_a_400_when_fields_are_present_but_invalid() {
     ];
 
     for (body, description) in test_cases {
-
         let response = app.post_subscriptions(body.into()).await;
 
         assert_eq!(
@@ -108,7 +105,6 @@ async fn subscribe_sends_a_confirmation_email_for_valid_data() {
 async fn subscribe_sends_a_confirmation_email_with_a_link() {
     let app = spawn_app().await;
     let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
-
 
     Mock::given(path("/email"))
         .and(method("POST"))
