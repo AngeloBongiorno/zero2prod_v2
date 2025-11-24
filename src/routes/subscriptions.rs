@@ -4,12 +4,25 @@ use crate::{
     startup::ApplicationBaseUrl,
 };
 use actix_web::{HttpResponse, web};
+use askama::Template;
 use chrono::Utc;
 use rand::distributions::Alphanumeric;
 use rand::{Rng, thread_rng};
 use sqlx::PgPool;
 use sqlx::{Executor, Postgres, Transaction};
 use uuid::Uuid;
+
+
+
+#[derive(Template)]
+#[template(
+    path="email_body.html"
+)]
+struct EmailHtmlBodyTemplate<'a> {
+    confirmation_link: &'a str,
+    name: &'a str,
+}
+
 
 #[derive(serde::Deserialize)]
 pub struct FormData {
@@ -128,17 +141,23 @@ pub async fn send_confirmation_email(
         "{}/subscriptions/confirm?subscription_token={}",
         base_url, subscription_token
     );
+    let subscriber_name = new_subscriber.name.as_ref();
+    let html_body_filled_template = EmailHtmlBodyTemplate { confirmation_link: &confirmation_link, name: subscriber_name};
     email_client
         .send_email(
             new_subscriber.email,
             "Welcome!",
+            /*
             &format!(
                 "Welcome to our newsletter!<br/>\
               Click <a href=\"{}\">here</a> to confirm your subscription.",
                 confirmation_link
             ),
+            */
+            &html_body_filled_template.render().unwrap(),
             &format!(
-                "Welcome to our newsletter!\nVisit {} to confirm your subscription.",
+                "Welcome to our newsletter, {}!\nVisit {} to confirm your subscription.",
+                subscriber_name,
                 confirmation_link
             ),
         )
